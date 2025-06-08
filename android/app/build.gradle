@@ -92,6 +92,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('tosstime.keystore')
+            storePassword '123456'
+            keyAlias 'Chirag'
+            keyPassword '123456'
+   }
     }
     buildTypes {
         debug {
@@ -117,3 +123,4 @@ dependencies {
         implementation jscFlavor
     }
 }
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
