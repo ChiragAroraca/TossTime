@@ -47,6 +47,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+    <string>This app needs access to camera to take photos for facility logos</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs access to photo library to select facility logos</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>PoppinsBlack.ttf</string>

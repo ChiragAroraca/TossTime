@@ -6,7 +6,7 @@ const { width, height } = Dimensions.get('window')
 export const styles=StyleSheet.create({
     mainContainer: {
     flex: 1,
-    backgroundColor: '#0F1419',
+    backgroundColor: colors.darkGray,
   },
   scrollContent: {
     flexGrow: 1,
@@ -18,7 +18,7 @@ export const styles=StyleSheet.create({
     height: '100%',
   },
   circle: {
-    position: 'ab solute',
+    position: 'absolute',
     borderRadius: 1000,
     opacity: 0.1,
   },
@@ -157,6 +157,59 @@ export const styles=StyleSheet.create({
     fontSize: 18,
   },
 
+  // User Type Selection Styles
+  userTypeContainer: {
+    marginBottom: 20,
+    paddingHorizontal: 4,
+  },
+  userTypeLabel: {
+    fontSize: 16,
+    fontFamily: Poppins.semiBold,
+    color: colors.gray,
+    marginBottom: 12,
+  },
+  userTypeOptions: {
+    flexDirection: 'column',
+    gap: 10,
+  },
+  userTypeOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+  },
+  userTypeOptionSelected: {
+    borderColor: colors.theme,
+    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: colors.lighestGray,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  checkboxSelected: {
+    backgroundColor: colors.theme,
+    borderColor: colors.theme,
+  },
+  userTypeText: {
+    fontSize: 14,
+    fontFamily: Poppins.regular,
+    color: colors.lightGray,
+    marginLeft: 8,
+  },
+  userTypeTextSelected: {
+    color: colors.theme,
+    fontFamily: Poppins.semiBold,
+  },
+
   termsContainer: {
     marginTop: 12,
     marginBottom: 20,
@@ -268,13 +321,25 @@ export const styles=StyleSheet.create({
     alignItems: 'center',
   },
   signUpText: {
-    fontSize: 16,
+    fontSize: 13,
     fontFamily:Poppins.regular,
     color: colors.lightGray,
   },
   signUpLink: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.theme,
     fontFamily:Poppins.semiBold,
   },
+  errorText: {
+  color: '#FF6B6B',
+  fontSize: 12,
+  fontFamily: Poppins.regular,
+  marginLeft: 15,
+  marginBottom: 8,
+},
+appLogo:{
+  width:180,
+  height:130,
+  resizeMode:'cover'
+}
 })

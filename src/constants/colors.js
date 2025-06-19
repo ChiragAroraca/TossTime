@@ -7,6 +7,8 @@ export const colors={
     yellow:'#FFE66D',
     bluishGray:'#8B9DC3',
     gray:'#2C3E50',
+    lighestGray:'#D1D5DB',
     lightGray:'#7F8C8D',
+    darkGray:'#0F1419',
 
 }

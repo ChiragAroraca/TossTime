@@ -6,8 +6,15 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { colors } from '../../constants/colors'
 import { Icons } from '../../constants/icons'
 import { useNavigation } from '@react-navigation/native'
+import { useDispatch, useSelector } from 'react-redux'
+import { loginUser } from '../../redux/store/slices/userSlice'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import Toast from 'react-native-simple-toast'
+import { useAuth } from '../../context/AuthContext'
+import CustomLoader from '../../components/CustomLoader'
 
 const Login = () => {
+  const { login } = useAuth();
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
@@ -16,6 +23,8 @@ const Login = () => {
   const formOpacity = useRef(new Animated.Value(0)).current
   const slideUp = useRef(new Animated.Value(50)).current
   const buttonScale = useRef(new Animated.Value(1)).current
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.user);
 
   useEffect(() => {
     Animated.sequence([
@@ -52,7 +61,19 @@ const Login = () => {
         useNativeDriver: true,
       })
     ]).start()
-    console.log('Login pressed', { email, password })
+
+    dispatch(loginUser({ email, password }))
+    .unwrap()
+    .then(async(res) => {
+      console.log('Login successful:', res);
+      await login(res?.token, res?.user);
+      // navigation.replace('Home');
+    })
+    .catch((err) => {
+      console.log('Login error:', err?.message);
+      Toast.show(err?.message, Toast.SHORT)
+      // You can also show a toast or banner using another slice
+    });
   }
   const handleRegister=()=>{
     navigation.navigate('Register')
@@ -75,14 +96,8 @@ const Login = () => {
           styles.logoContainer,
           { transform: [{ scale: logoScale }] }
         ]}>
-          <View style={styles.baseballIcon}>
-            <View style={styles.baseball}>
-              <View style={styles.baseballStitch1} />
-              <View style={styles.baseballStitch2} />
-            </View>
-          </View>
-          <Text style={styles.appTitle}>TossTime</Text>
-          <Text style={styles.appSubtitle}>' OUR MOTO FOR APP '</Text>
+          <Image source={Icons.appLogo} style={styles.appLogo}/>
+          <Text style={styles.appSubtitle}>Your Training. Your Time. Your Toss</Text>
         </Animated.View>
       </View>
 
@@ -144,8 +159,14 @@ const Login = () => {
               onPress={handleLogin}
               activeOpacity={0.8}
             >
+              {userData?.status=='loading'?
+              <CustomLoader size={25}/>
+              :
+              <>
               <Text style={styles.loginButtonText}>Sign In</Text>
-                <MaterialIcons name='sports-baseball' size={16} style={{marginBottom:2.5}} color={colors.white}/>
+               <MaterialIcons name='sports-baseball' size={16} style={{marginBottom:2.5}} color={colors.white}/>
+               </>
+            }
             </TouchableOpacity>
           </Animated.View>
 

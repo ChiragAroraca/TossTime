@@ -2,6 +2,7 @@ import { ScrollView, Text, View, TextInput, TouchableOpacity, Image, Dimensions,
 import React, { useState, useEffect, useRef } from 'react'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import Toast from 'react-native-simple-toast'
 import { colors } from '../../constants/colors'
 import { Icons } from '../../constants/icons'
 import { styles } from '../Login/styles'
@@ -14,6 +15,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
+  const [userType, setUserType] = useState('player') // 'player' or 'facility_manager'
   const navigation = useNavigation()
   const logoScale = useRef(new Animated.Value(0.8)).current
   const formOpacity = useRef(new Animated.Value(0)).current
@@ -42,6 +44,66 @@ const Register = () => {
     ]).start()
   }, [])
 
+  // Email validation function
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  // Password strength validation
+  const isStrongPassword = (password) => {
+    // At least 8 characters, contains uppercase, lowercase, number, and special character
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+    return strongPasswordRegex.test(password)
+  }
+
+  // Validation function
+  const validateForm = () => {
+    // Check if all fields are filled
+    if (!fullName.trim()) {
+      Toast.show('Please enter your full name', Toast.SHORT)
+      return false
+    }
+
+    if (fullName.trim().length < 2) {
+      Toast.show('Full name must be at least 2 characters long', Toast.SHORT)
+      return false
+    }
+
+    if (!email.trim()) {
+      Toast.show('Please enter your email address', Toast.SHORT)
+      return false
+    }
+
+
+    if (!password) {
+      Toast.show('Please enter a password', Toast.SHORT)
+      return false
+    }
+
+    if (password.length < 6) {
+      Toast.show('Password must be at least 8 characters long', Toast.SHORT)
+      return false
+    }
+
+    if (!isStrongPassword(password)) {
+      Toast.show('Password must contain uppercase, lowercase, number and special character', Toast.LONG)
+      return false
+    }
+
+    if (!confirmPassword) {
+      Toast.show('Please confirm your password', Toast.SHORT)
+      return false
+    }
+
+    if (password !== confirmPassword) {
+      Toast.show('Passwords do not match', Toast.SHORT)
+      return false
+    }
+
+    return true
+  }
+
   const handleRegister = () => {
     Animated.sequence([
       Animated.timing(buttonScale, {
@@ -55,11 +117,31 @@ const Register = () => {
         useNativeDriver: true,
       })
     ]).start()
-    console.log('Register pressed', { fullName, email, password, confirmPassword })
+
+    // Validate form before proceeding
+    if (!validateForm()) {
+      return
+    }
+
+    // Show success message
+    Toast.show('Account validation successful!', Toast.SHORT)
+
+    console.log('Register pressed', { fullName, email, password, confirmPassword, userType })
+
+    // Navigate based on user type
+    if(userType === 'player'){
+      navigation.navigate('StepOnePlayer', {data: {name: fullName, email: email, password: password,role:userType}})
+    } else {
+      navigation.navigate('SubscriptionScreen', {data: {name: fullName, email: email, password: password,role:userType}})
+    }
   }
 
   const handleLogin = () => {
     navigation.navigate('Login')
+  }
+
+  const toggleUserType = (type) => {
+    setUserType(type)
   }
 
   return (
@@ -79,14 +161,8 @@ const Register = () => {
           styles.logoContainer,
           { transform: [{ scale: logoScale }] }
         ]}>
-          <View style={styles.baseballIcon}>
-            <View style={styles.baseball}>
-              <View style={styles.baseballStitch1} />
-              <View style={styles.baseballStitch2} />
-            </View>
-          </View>
-          <Text style={styles.appTitle}>TossTime</Text>
-          <Text style={styles.appSubtitle}>' OUR MOTO FOR APP '</Text>
+          <Image source={Icons.appLogo} style={styles.appLogo}/>
+          <Text style={styles.appSubtitle}>Your Training. Your Time. Your Toss</Text>
         </Animated.View>
       </View>
 
@@ -174,6 +250,78 @@ const Register = () => {
             </TouchableOpacity>
           </View>
 
+          {/* User Type Selection */}
+          <View style={styles.userTypeContainer}>
+            <Text style={styles.userTypeLabel}>I am a:</Text>
+            <View style={styles.userTypeOptions}>
+              <TouchableOpacity
+                style={[
+                  styles.userTypeOption,
+                  userType === 'player' && styles.userTypeOptionSelected
+                ]}
+                onPress={() => toggleUserType('player')}
+              >
+                <View style={[
+                  styles.checkbox,
+                  userType === 'player' && styles.checkboxSelected
+                ]}>
+                  {userType === 'player' && (
+                    <AntDesign name="check" size={14} color={colors.white} />
+                  )}
+                </View>
+                <MaterialIcons name="sports-baseball" size={20} color={userType === 'player' ? colors.theme : colors.lightGray} />
+                <Text style={[
+                  styles.userTypeText,
+                  userType === 'player' && styles.userTypeTextSelected
+                ]}>Player</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.userTypeOption,
+                  userType === 'facility_manager' && styles.userTypeOptionSelected
+                ]}
+                onPress={() => toggleUserType('facility_manager')}
+              >
+                <View style={[
+                  styles.checkbox,
+                  userType === 'facility_manager' && styles.checkboxSelected
+                ]}>
+                  {userType === 'facility_manager' && (
+                    <AntDesign name="check" size={14} color={colors.white} />
+                  )}
+                </View>
+                <MaterialIcons name="business" size={20} color={userType === 'facility_manager' ? colors.theme : colors.lightGray} />
+                <Text style={[
+                  styles.userTypeText,
+                  userType === 'facility_manager' && styles.userTypeTextSelected
+                ]}>Facility Manager</Text>
+              </TouchableOpacity>
+
+                 <TouchableOpacity
+                style={[
+                  styles.userTypeOption,
+                  userType === 'school-college' && styles.userTypeOptionSelected
+                ]}
+                onPress={() => toggleUserType('school-college')}
+              >
+                <View style={[
+                  styles.checkbox,
+                  userType === 'school-college' && styles.checkboxSelected
+                ]}>
+                  {userType === 'school-college' && (
+                    <AntDesign name="check" size={14} color={colors.white} />
+                  )}
+                </View>
+                <MaterialIcons name="business" size={20} color={userType === 'school-college' ? colors.theme : colors.lightGray} />
+                <Text style={[
+                  styles.userTypeText,
+                  userType === 'school-college' && styles.userTypeTextSelected
+                ]}>Schools/Universities</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           <View style={styles.termsContainer}>
             <Text style={styles.termsText}>By signing up, you agree to our</Text>
             <View style={styles.termsSubContainer}>
@@ -185,7 +333,6 @@ const Register = () => {
                 <Text style={styles.termsLink}>Privacy Policy</Text>
               </TouchableOpacity>
             </View>
-
           </View>
 
           <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
